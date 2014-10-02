@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>DEMO</title>
+        <link rel="stylesheet" href="./css/kube.css"/>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="./js/jq.watson.js"></script>
+    </head>
+    <body>
+        <form method="post" id="form" class="width-25 forms centered">
+            <label>
+                Enter your name <span id="for-name" class="error"></span>
+                <input type="text" name="name" placeholder="Name" class="width-100" />
+            </label>
+            <label>
+                Enter comment <span id="for-text" class="error"></span>
+                <textarea name="text" class="width-100"></textarea>
+            </label>
+            <p>
+                <input type="submit" class="btn btn-blue width-100" value="Send">
+            </p>
+        </form>
+        <script>
+            $("#form").wajaxform({
+                classError:"input-error",
+                classSuccess:"input-success",
+                data: {
+                    name:{
+                        check: "numeric",
+                        text: "Введенные данные должны быть числом",
+                        msgElement: "#for-name"
+                    },
+                    text: {
+                        check: "email",
+                        text: "Допустимая длина текста от 5 до 10 символов",
+                        min:5,
+                        max:10,
+                        msgElement:"#for-text"
+                    }
+
+                }
+            });
+        </script>
+    </body>
+</html>
