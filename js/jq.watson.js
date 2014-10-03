@@ -394,3 +394,189 @@
         return this.each(init);
     };
 })(jQuery);
+
+function modal(options){
+    return new modal.prototype.Init(options);
+}
+modal.prototype = {
+    width:500,
+    load: function(){},
+    Init: function(options){
+
+        this.build();
+
+        if (typeof options == "object"){
+            if (options.width){
+                this.width = options.width;
+            }
+            if (options.load){
+                this.load = options.load.bind(this);
+            }
+            if (options.title){
+                this.setTitle("Заголовок");
+            }
+            if (options.content){
+                this.setContent(options.content);
+            }
+
+        }
+    },
+
+    build: function(){
+        this.$modalOverlay = $('<div id="modal-overlay">').hide();
+        this.$modalBox = $('<div class="modal-box" />').hide();
+        this.$modal = $('<div class="modal" />');
+        this.$modalHeader = $('<header />');
+        this.$modalClose = $('<span class="modal-close" />').html('&times;');
+        this.$modalBody = $('<section />');
+        this.$modalFooter = $('<footer />');
+        this.$modal.append(this.$modalHeader);
+        this.$modal.append(this.$modalClose);
+        this.$modal.append(this.$modalBody);
+        this.$modal.append(this.$modalFooter);
+        this.$modalBox.append(this.$modal);
+        this.$modalClose.on("click",$.proxy(this.close, this));
+    },
+    close: function(e){
+        if (e){
+            if (!$(e.target).hasClass('modal-close-btn') && e.target != this.$modalClose[0] && e.target != this.$modalBox[0])
+            {
+                return;
+            }
+
+            e.preventDefault();
+        }
+
+        if (!this.$modalBox) return;
+
+        this.$modalOverlay.remove();
+        this.$modalBox.fadeOut('fast', $.proxy(function()
+        {
+            this.$modalBox.remove();
+            $(document.body).css('overflow', this.bodyOveflow);
+        }, this));
+    },
+    show: function(){
+        this.load();
+        if ($(".modal-box").length){
+            $(".modal-box").remove();
+        }
+        if ($("#modal-overlay").length){
+            $("#modal-overlay").remove();
+        }
+        this.$modalBox.appendTo(document.body);
+        this.$modalOverlay.appendTo(document.body);
+
+        this.bodyOveflow = $(document.body).css('overflow');
+        $(document.body).css('overflow', 'hidden');
+
+        if (this.isMobile())
+        {
+            this.showOnMobile();
+        }
+        else
+        {
+            this.showOnDesktop();
+        }
+
+        // resize
+        if (!this.isMobile())
+        {
+            setTimeout($.proxy(this.showOnDesktop, this), 0);
+            $(window).on('resize', $.proxy(this.resize, this));
+        }
+
+        this.$modalOverlay.show();
+        this.$modalBox.show();
+
+    },
+    resize: function()
+    {
+        if (this.isMobile())
+        {
+            this.showOnMobile();
+        }
+        else
+        {
+            this.showOnDesktop();
+        }
+    },
+    isMobile: function()
+    {
+        var mq = window.matchMedia("(max-width: 767px)");
+        return (mq.matches) ? true : false;
+    },
+    showOnDesktop: function()
+    {
+        var height = this.$modal.outerHeight();
+        var windowHeight = $(window).height();
+        var windowWidth = $(window).width();
+
+        if (this.width > windowWidth)
+        {
+            this.$modal.css({
+                width: '96%',
+                marginTop: (windowHeight/2 - height/2) + 'px'
+            });
+            return;
+        }
+
+        if (height > windowHeight)
+        {
+            this.$modal.css({
+                width: this.width + 'px',
+                marginTop: '20px'
+            });
+        }
+        else
+        {
+            this.$modal.css({
+                width: this.width + 'px',
+                marginTop: (windowHeight/2 - height/2) + 'px'
+            });
+        }
+    },
+    showOnMobile: function()
+    {
+        this.$modal.css({
+            width: '96%',
+            marginTop: '2%'
+        });
+
+    },
+    setTitle: function(str)
+    {
+        this.$modalHeader.html(str);
+    },
+    setContent: function(data)
+    {
+        if (typeof data == 'object'){
+            if (data.html){
+                this.$modalBody.html(data.html);
+                this.show();
+            }
+
+            if (data.selector){
+                this.$modalBody.html($(data.selector).html());
+                this.show();
+            }
+
+            if (data.ajax){
+                $.ajax({
+                    url: data.ajax,
+                    cache: false,
+                    success: $.proxy(function(data)
+                    {
+                        this.$modalBody.html(data);
+                        this.show();
+                    }, this)
+                });
+            }
+        }
+
+    }
+
+
+};
+
+modal.prototype.Init.prototype = modal.prototype;
