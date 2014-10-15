@@ -413,7 +413,7 @@ modal.prototype = {
                 this.load = options.load.bind(this);
             }
             if (options.title){
-                this.setTitle("Заголовок");
+                this.setTitle(options.title);
             }
             if (options.content){
                 this.setContent(options.content);
