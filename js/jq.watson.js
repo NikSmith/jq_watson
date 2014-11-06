@@ -418,6 +418,9 @@ modal.prototype = {
             if (options.content){
                 this.setContent(options.content);
             }
+            if (options.buttons){
+                this.setButtons(options.buttons);
+            }
 
         }
     },
@@ -547,6 +550,19 @@ modal.prototype = {
     setTitle: function(str)
     {
         this.$modalHeader.html(str);
+    },
+
+    setButtons: function(btns){
+        for (var i=0; i<btns.length; i++){
+            var button = $('<button>').addClass(btns[i].class).html(btns[i].title);
+            button.on('click', $.proxy(btns[i].click, this));
+            this.$modalFooter.append(button);
+        }
+        var buttons = this.$modalFooter.find('button');
+        var buttonsSize = buttons.size();
+        if (buttonsSize === 0) return;
+
+        buttons.css('width', (100/buttonsSize) + '%');
     },
     setContent: function(data)
     {
