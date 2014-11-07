@@ -585,6 +585,7 @@ modal.prototype = {
                     {
                         this.$modalBody.html(data);
                         this.show();
+                        this.resize();
                     }, this)
                 });
             }
