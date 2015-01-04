@@ -460,7 +460,6 @@ modal.prototype = {
         }, this));
     },
     show: function(){
-        this.load();
         if ($(".modal-box").length){
             $(".modal-box").remove();
         }
@@ -491,7 +490,7 @@ modal.prototype = {
 
         this.$modalOverlay.show();
         this.$modalBox.show();
-
+        this.load();
     },
     resize: function()
     {
